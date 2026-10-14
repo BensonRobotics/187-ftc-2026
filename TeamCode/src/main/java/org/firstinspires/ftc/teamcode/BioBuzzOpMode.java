@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "BioBuzz187 2026", group = "Robot")
 public class BioBuzzOpMode extends OpMode {
@@ -55,6 +56,7 @@ public class BioBuzzOpMode extends OpMode {
 
     private boolean auto_mave;
 
+    private BioBuzzColorDistanceSensor cdSensor;
     private class Vector2 {
         public double x;
         public double y;
@@ -76,6 +78,9 @@ public class BioBuzzOpMode extends OpMode {
 
     private double end_pos_x;
     private double end_pos_y;
+
+    private Servo snowPlowServo;
+
 
     // -- Subsystems (rename/add per robot) --
     // private DcMotor intakeMotor;
@@ -107,7 +112,7 @@ public class BioBuzzOpMode extends OpMode {
 
 
 
-
+        cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
         // You need to initialize it
 
         Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
@@ -141,6 +146,27 @@ public class BioBuzzOpMode extends OpMode {
     }
 
     // @Override
+    public void RunOpmode() {
+        if (gamepad1.left_bumper) {
+            if (snowPlowServo.getPosition()>0.1){
+                snowPlowServo.setPosition(0.0);
+            }
+            else {
+                snowPlowServo.setPosition(0.3694);
+            }
+        }
+        // Move servo to midway position (approx 90/180 degrees)
+
+
+        // Send telemetry data to the Driver Station
+        telemetry.addData("Servo Position", snowPlowServo.getPosition());
+        telemetry.update();
+    }
+
+    private void wait(boolean b) {
+    }
+
+    // @Override
     public void loop() {
         // =================================================================
         // 6. MAIN LOOP — called repeatedly (nominally every ~20ms) until
@@ -148,6 +174,11 @@ public class BioBuzzOpMode extends OpMode {
         // =================================================================
 
         // --- 6a. Read driver input (gamepad1 / gamepad2), if teleop ---
+        double distancemm = cdSensor.GetDistance();
+        BioBuzzColorDistanceSensor.color color = cdSensor.GetColor();
+        telemetry.addData("color", color);
+        telemetry.addData("distance (mm)", "%.3f", distancemm);
+        telemetry.update();
 
         if (gamepad1.xWasPressed()) {
             auto_mave = !auto_mave;
@@ -203,6 +234,7 @@ public class BioBuzzOpMode extends OpMode {
         // =================================================================
 
         XYdrive.stop();
+        snowPlowServo.setPosition(0.0);
     }
 
 
