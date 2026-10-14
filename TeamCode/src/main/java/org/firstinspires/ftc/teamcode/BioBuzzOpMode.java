@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 // --- FTC SDK imports you'll typically need ---
 // import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 // import com.qualcomm.robotcore.eventloop.opmode.TeleOp;   // or @Autonomous
@@ -24,8 +25,18 @@ package org.firstinspires.ftc.teamcode;
  * See SkeletonLinearOpMode.java for the simpler, blocking alternative.
  */
 
-// @TeleOp(name = "Skeleton OpMode", group = "Training")
-public class BioBuzzOpMode /* extends OpMode */ {
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+@TeleOp(name = "BioBuzz187 2026", group = "Robot")
+public class BioBuzzOpMode extends OpMode {
 
     // =====================================================================
     // 1. HARDWARE DEVICE DECLARATIONS
@@ -36,6 +47,35 @@ public class BioBuzzOpMode /* extends OpMode */ {
     // private DcMotor leftBackDrive;
     // private DcMotor rightFrontDrive;
     // private DcMotor rightBackDrive;
+
+    private MecanumDrive XYdrive;
+
+    private HiveDetector9001 Limelight;
+    GoBildaPinpointDriver Odometry;
+
+    private boolean auto_mave;
+
+    private class Vector2 {
+        public double x;
+        public double y;
+
+        // Default constructor (0, 0)
+        public Vector2() {
+            this.x = 0;
+            this.y = 0;
+        }
+
+        // Constructor with coordinates
+        public Vector2(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    private Vector2 end_pos;
+
+    private double end_pos_x;
+    private double end_pos_y;
 
     // -- Subsystems (rename/add per robot) --
     // private DcMotor intakeMotor;
@@ -64,6 +104,23 @@ public class BioBuzzOpMode /* extends OpMode */ {
         //    Runs exactly once, right after INIT is pressed on the DS.
         //    Same content as steps 2+3 in the LinearOpMode skeleton.
         // =================================================================
+
+
+
+
+        // You need to initialize it
+
+        Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
+        Odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        Odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+
+
+
+        Limelight = new HiveDetector9001(hardwareMap, "LimeLight");
+        XYdrive = new MecanumDrive(hardwareMap, "FrontLeft", "BackLeft", "FrontRight", "BackRight");
+        // 3 -- BackRight, 2 -- BackLeft, 1 -- FrontRight, 0 -- FrontLeft //
+
     }
 
     // @Override
@@ -92,6 +149,29 @@ public class BioBuzzOpMode /* extends OpMode */ {
 
         // --- 6a. Read driver input (gamepad1 / gamepad2), if teleop ---
 
+        if (gamepad1.xWasPressed()) {
+            auto_mave = !auto_mave;
+            Odometry.setPosX(0.0, DistanceUnit.METER);
+            Odometry.setPosY(0.0, DistanceUnit.METER);
+            end_pos_x = 1.0;
+            end_pos_y = 0.5;
+        }
+
+        if (auto_mave) {
+            if (!(Odometry.getPosition().getX(DistanceUnit.METER) >= end_pos_x)) {
+                XYdrive.driveXY(0.2, 0.0, 0.0);
+            }
+            else if (!(Odometry.getPosition().getY(DistanceUnit.METER) >= end_pos_y)) {
+                XYdrive.driveXY(0.0, 0.2, 0.0);
+            }
+            else {
+                auto_mave = false;
+                XYdrive.stop();
+            }
+        } else {
+            XYdrive.driveXY(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+        }
+
         // --- 6b. Drivetrain: turn input into wheel power ---
 
         // --- 6c. Subsystem / state-machine step
@@ -99,10 +179,19 @@ public class BioBuzzOpMode /* extends OpMode */ {
 
         // --- 6d. Sensor reads (color sensor, vision, IMU heading) ---
 
+        Odometry.update();
+
         // --- 6e. Telemetry (always end the loop with this) ---
+
         // telemetry.update();
 
-        MecanumDrive.drive(23.0, 2.0, 2.0);
+        telemetry.addData("OdomX", Odometry.getPosX(DistanceUnit.METER));
+        telemetry.addData("OdomY", Odometry.getPosY(DistanceUnit.METER));
+        telemetry.addData("OdomX", end_pos_x);
+        telemetry.addData("OdomY", end_pos_y);
+
+
+
     }
 
     // @Override
@@ -112,6 +201,9 @@ public class BioBuzzOpMode /* extends OpMode */ {
         //    match time expires). Put safety/cleanup here — e.g. make sure
         //    every motor is explicitly set to zero power.
         // =================================================================
+
+        XYdrive.stop();
     }
+
 
 }
