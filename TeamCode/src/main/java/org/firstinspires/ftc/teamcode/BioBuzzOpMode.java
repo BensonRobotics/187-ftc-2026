@@ -148,7 +148,7 @@ public class BioBuzzOpMode extends OpMode {
     // @Override
     public void RunOpmode() {
         if (gamepad1.left_bumper) {
-            if (snowPlowServo.getPosition()>0.1){
+            if (snowPlowServo.getPosition()>0.01){
                 snowPlowServo.setPosition(0.0);
             }
             else {
