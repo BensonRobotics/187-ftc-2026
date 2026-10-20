@@ -55,12 +55,14 @@
      private DcMotor rightFrontDrive = null;
      private DcMotor rightBackDrive = null;
      private DcMotor intake = null;
+     private DcMotor turitbass = null;
 
      private double x;
      private double y;
      private double stickthata;
      private double stickmag;
      private double feldthata;
+     private double fx;
 
 
 
@@ -68,6 +70,9 @@
 
      @Override
      public void runOpMode() {
+
+
+
          IMU imu;
          // Retrieve the IMU from the hardware map
          imu = hardwareMap.get(IMU.class, "imu");
@@ -90,6 +95,7 @@
          rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
          rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
          intake = hardwareMap.get(DcMotor.class,"intake_moter");
+         turitbass = hardwareMap.get(DcMotor.class,"turit_bass");
 
 
 
@@ -115,6 +121,13 @@
              rightBackDrive.setPower(y+x-gamepad1.right_stick_x);
              leftFrontDrive.setPower(y+x+gamepad1.right_stick_x);
              rightFrontDrive.setPower(y-x-gamepad1.right_stick_x);
+
+                if()
+                {
+
+                }
+
+
 
 
 
