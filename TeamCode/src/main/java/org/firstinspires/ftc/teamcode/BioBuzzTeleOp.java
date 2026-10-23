@@ -54,8 +54,8 @@
      private DcMotor leftBackDrive = null;
      private DcMotor rightFrontDrive = null;
      private DcMotor rightBackDrive = null;
-    // private DcMotor intake = null;
-    // private DcMotor turitbass = null;
+     private DcMotor intake = null;
+     private DcMotor turitbass = null;
 
      private double x;
      private double y;
@@ -94,8 +94,8 @@
          leftBackDrive  = hardwareMap.get(DcMotor.class, "BackLeft");
          rightFrontDrive = hardwareMap.get(DcMotor.class, "FrontRight");
          rightBackDrive = hardwareMap.get(DcMotor.class, "BackRight");
-        // intake = hardwareMap.get(DcMotor.class,"intake_moter");
-       //  turitbass = hardwareMap.get(DcMotor.class,"turit_bass");
+         intake = hardwareMap.get(DcMotor.class,"intake_moter");
+         turitbass = hardwareMap.get(DcMotor.class,"turit_bass");
 
 
 
@@ -103,24 +103,25 @@
 
          waitForStart();
          while (opModeIsActive()){
-           //  intake.setPower(1);
+             intake.setPower(1);
+
 
             if(gamepad1.x)
             {
                 imu.resetYaw();
             }
 
-             stickthata = Math.atan2( gamepad1.left_stick_x , gamepad1.left_stick_y );
-             stickmag = Math.hypot( gamepad1.left_stick_x , gamepad1.left_stick_y);
+             stickthata = Math.atan2( -gamepad1.left_stick_y , gamepad1.left_stick_x );
+             stickmag = Math.hypot( gamepad1.left_stick_x , -gamepad1.left_stick_y);
              feldthata = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-             x = Math.cosh(feldthata+stickthata)*stickmag;
-             y = Math.sinh(feldthata+stickthata)*stickmag;
+             x = Math.sin(feldthata+stickthata)*stickmag;
+             y = Math.cos(feldthata+stickthata)*stickmag;
 
-             leftBackDrive.setPower(y-x+gamepad1.right_stick_x);
-             rightBackDrive.setPower(y+x-gamepad1.right_stick_x);
-             leftFrontDrive.setPower(y+x+gamepad1.right_stick_x);
-             rightFrontDrive.setPower(y-x-gamepad1.right_stick_x);
+             leftBackDrive.setPower(y -x +gamepad1.right_stick_x);
+             rightBackDrive.setPower(y+ x -gamepad1.right_stick_x);
+             leftFrontDrive.setPower(y+x +gamepad1.right_stick_x);
+             rightFrontDrive.setPower(y -x -gamepad1.right_stick_x);
 
 
 
