@@ -13,7 +13,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HiveDetector9001 {
 
@@ -27,19 +29,28 @@ public class HiveDetector9001 {
         //Set poll rate (Refresh Rate)
         limelight.setPollRateHz(80);
 
+        limelight.pipelineSwitch(0);
+
         limelight.start();
 
     }
-     //public void Update(){
-//        LLResult latestresult = limelight.getLatestResult();
-//
-//
-//        if (latestresult.isValid() && latestresult != null){
-//            List<LLResultTypes.FiducialResult> fiducialResults =
+     public Map<Integer, AprilTag187> Update(){
+        LLResult latestresult = limelight.getLatestResult();
 
-//            double ty = latestresult.getTy(); //Vertical offset (Negative is down, positive is up)
-//            double tx = latestresult.getTx(); // Horizontal offset (Negative is left <--, Positive is right -->)
 
-        }
-  //   }
-//}
+        List<LLResultTypes.FiducialResult> fiducialResults = latestresult.getFiducialResults();
+
+        Map<Integer, AprilTag187> metadata = new HashMap<>();
+
+         for (LLResultTypes.FiducialResult fiducial : fiducialResults) { //
+             int id = fiducial.getFiducialId(); //
+             double tx = fiducial.getTargetXDegrees();
+             double ty = fiducial.getTargetYDegrees();
+             double ta = fiducial.getTargetArea();
+             metadata.put(id, new AprilTag187(tx, ty, ta));
+         }
+         return metadata;
+
+     }
+}
+

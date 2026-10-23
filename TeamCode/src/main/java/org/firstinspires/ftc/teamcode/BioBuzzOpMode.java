@@ -26,6 +26,7 @@ package org.firstinspires.ftc.teamcode;
  */
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -35,6 +36,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import java.util.List;
+import java.util.Map;
 
 @TeleOp(name = "BioBuzz187 2026", group = "Robot")
 public class BioBuzzOpMode extends OpMode {
@@ -52,11 +56,11 @@ public class BioBuzzOpMode extends OpMode {
     private MecanumDrive XYdrive;
 
     private HiveDetector9001 Limelight;
-    GoBildaPinpointDriver Odometry;
+    //GoBildaPinpointDriver Odometry; //test
 
     private boolean auto_mave;
 
-    private BioBuzzColorDistanceSensor cdSensor;
+    //private BioBuzzColorDistanceSensor cdSensor;
     private class Vector2 {
         public double x;
         public double y;
@@ -112,18 +116,18 @@ public class BioBuzzOpMode extends OpMode {
 
 
 
-        cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
+        //cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
         // You need to initialize it
 
-        Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
-        Odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        Odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        //Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
+       // Odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+       // Odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
 
 
 
-        Limelight = new HiveDetector9001(hardwareMap, "LimeLight");
-        XYdrive = new MecanumDrive(hardwareMap, "FrontLeft", "BackLeft", "FrontRight", "BackRight");
+        Limelight = new HiveDetector9001(hardwareMap, "limelight");
+        //XYdrive = new MecanumDrive(hardwareMap, "FrontLeft", "BackLeft", "FrontRight", "BackRight");
         // 3 -- BackRight, 2 -- BackLeft, 1 -- FrontRight, 0 -- FrontLeft //
 
     }
@@ -147,20 +151,20 @@ public class BioBuzzOpMode extends OpMode {
 
     // @Override
     public void RunOpmode() {
-        if (gamepad1.left_bumper) {
-            if (snowPlowServo.getPosition()>0.01){
-                snowPlowServo.setPosition(0.0);
-            }
-            else {
-                snowPlowServo.setPosition(0.3694);
-            }
-        }
+//        if (gamepad1.left_bumper) {
+//            if (snowPlowServo.getPosition()>0.01){
+//                snowPlowServo.setPosition(0.0);
+//            }
+//            else {
+//                snowPlowServo.setPosition(0.3694);
+//            }
+//        }
         // Move servo to midway position (approx 90/180 degrees)
 
 
         // Send telemetry data to the Driver Station
-        telemetry.addData("Servo Position", snowPlowServo.getPosition());
-        telemetry.update();
+//        telemetry.addData("Servo Position", snowPlowServo.getPosition());
+//        telemetry.update();
     }
 
     private void wait(boolean b) {
@@ -174,34 +178,34 @@ public class BioBuzzOpMode extends OpMode {
         // =================================================================
 
         // --- 6a. Read driver input (gamepad1 / gamepad2), if teleop ---
-        double distancemm = cdSensor.GetDistance();
-        BioBuzzColorDistanceSensor.color color = cdSensor.GetColor();
-        telemetry.addData("color", color);
-        telemetry.addData("distance (mm)", "%.3f", distancemm);
-        telemetry.update();
+//        double distancemm = cdSensor.GetDistance();
+//        BioBuzzColorDistanceSensor.color color = cdSensor.GetColor();
+//        telemetry.addData("color", color);
+//        telemetry.addData("distance (mm)", "%.3f", distancemm);
+//        telemetry.update();
 
-        if (gamepad1.xWasPressed()) {
-            auto_mave = !auto_mave;
-            Odometry.setPosX(0.0, DistanceUnit.METER);
-            Odometry.setPosY(0.0, DistanceUnit.METER);
-            end_pos_x = 1.0;
-            end_pos_y = 0.5;
-        }
+//        if (gamepad1.xWasPressed()) {
+//            auto_mave = !auto_mave;
+//            //Odometry.setPosX(0.0, DistanceUnit.METER);
+//           // Odometry.setPosY(0.0, DistanceUnit.METER);
+//            end_pos_x = 1.0;
+//            end_pos_y = 0.5;
+//        }
 
-        if (auto_mave) {
-            if (!(Odometry.getPosition().getX(DistanceUnit.METER) >= end_pos_x)) {
-                XYdrive.driveXY(0.2, 0.0, 0.0);
-            }
-            else if (!(Odometry.getPosition().getY(DistanceUnit.METER) >= end_pos_y)) {
-                XYdrive.driveXY(0.0, 0.2, 0.0);
-            }
-            else {
-                auto_mave = false;
-                XYdrive.stop();
-            }
-        } else {
-            XYdrive.driveXY(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
-        }
+//        if (auto_mave) {
+//            if (!(Odometry.getPosition().getX(DistanceUnit.METER) >= end_pos_x)) {
+//                XYdrive.driveXY(0.2, 0.0, 0.0);
+//            }
+//            else if (!(Odometry.getPosition().getY(DistanceUnit.METER) >= end_pos_y)) {
+//                XYdrive.driveXY(0.0, 0.2, 0.0);
+//            }
+//            else {
+//                auto_mave = false;
+//                XYdrive.stop();
+//            }
+//        } else {
+//            XYdrive.driveXY(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+//        }
 
         // --- 6b. Drivetrain: turn input into wheel power ---
 
@@ -210,16 +214,12 @@ public class BioBuzzOpMode extends OpMode {
 
         // --- 6d. Sensor reads (color sensor, vision, IMU heading) ---
 
-        Odometry.update();
-
+       // Odometry.update();
+        Map<Integer, AprilTag187> apriltagsdata = Limelight.Update();
         // --- 6e. Telemetry (always end the loop with this) ---
+        telemetry.addData("AprilTags", apriltagsdata);
 
-        // telemetry.update();
-
-        telemetry.addData("OdomX", Odometry.getPosX(DistanceUnit.METER));
-        telemetry.addData("OdomY", Odometry.getPosY(DistanceUnit.METER));
-        telemetry.addData("OdomX", end_pos_x);
-        telemetry.addData("OdomY", end_pos_y);
+        telemetry.update();
 
 
 
@@ -233,8 +233,8 @@ public class BioBuzzOpMode extends OpMode {
         //    every motor is explicitly set to zero power.
         // =================================================================
 
-        XYdrive.stop();
-        snowPlowServo.setPosition(0.0);
+//        XYdrive.stop();
+//        snowPlowServo.setPosition(0.0);
     }
 
 
