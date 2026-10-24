@@ -30,16 +30,6 @@ public class HiveDetector9001 {
         limelight.start();
 
     }
-     //public void Update(){
-//        LLResult latestresult = limelight.getLatestResult();
-//
-//
-//        if (latestresult.isValid() && latestresult != null){
-//            List<LLResultTypes.FiducialResult> fiducialResults =
+     public void getResults(){
 
-//            double ty = latestresult.getTy(); //Vertical offset (Negative is down, positive is up)
-//            double tx = latestresult.getTx(); // Horizontal offset (Negative is left <--, Positive is right -->)
-
-        }
-  //   }
-//}
+   }}
