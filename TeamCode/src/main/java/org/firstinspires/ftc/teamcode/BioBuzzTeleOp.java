@@ -38,6 +38,7 @@
  import com.qualcomm.robotcore.hardware.DcMotorSimple;
  import com.qualcomm.robotcore.hardware.Gamepad;
  import com.qualcomm.robotcore.hardware.IMU;
+ import com.qualcomm.robotcore.hardware.Servo;
  import com.qualcomm.robotcore.util.ElapsedTime;
 
  import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -54,6 +55,9 @@
      private DcMotor leftBackDrive = null;
      private DcMotor rightFrontDrive = null;
      private DcMotor rightBackDrive = null;
+     private DcMotorEx luancherMoter = null;
+     private Servo launcherServo = null;
+
      private DcMotor intake = null;
      private DcMotor turitbass = null;
 
@@ -63,6 +67,13 @@
      private double stickmag;
      private double feldthata;
      private double fx;
+     private double launchAngle;
+     private double launchSpeed;
+     private double Vy;
+     private double Vx;
+     private double Distince;
+
+
 
 
 
@@ -96,6 +107,9 @@
          rightBackDrive = hardwareMap.get(DcMotor.class, "BackRight");
          intake = hardwareMap.get(DcMotor.class,"intake_moter");
          turitbass = hardwareMap.get(DcMotor.class,"turit_bass");
+         luancherMoter = hardwareMap.get(DcMotorEx.class,"launcher_moter");
+         launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
+
 
 
 
@@ -122,6 +136,37 @@
              rightBackDrive.setPower(y+ x -gamepad1.right_stick_x);
              leftFrontDrive.setPower(y+x +gamepad1.right_stick_x);
              rightFrontDrive.setPower(y -x -gamepad1.right_stick_x);
+
+
+
+             //------------------------------------------------------------------------------------
+
+
+
+
+
+
+             Math.atan( Vy/Vx);
+
+             Vx = Math.pow(Distince,4)*(-0.123)+Math.pow(Distince,3)*(0.5)-Math.pow(Distince,2)*(0.978)+Distince*(2.13)-0.004;
+
+             Vy=(4.9*Math.pow(Distince/Vx,2)+1.1)/(Distince/Vx);
+
+             launchAngle = Math.atan(Vy/Vx);
+
+             launchSpeed = ((60*Math.sqrt(Math.pow(1.1,2)+Math.pow(Distince,2))/Math.PI*0.048)/6000)+0.53;
+
+
+             launcherServo.setPosition(launchAngle);
+             luancherMoter.setVelocity(2800*launchSpeed);
+
+
+
+
+
+
+
+
 
 
 
