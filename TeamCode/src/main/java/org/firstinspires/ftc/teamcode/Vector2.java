@@ -28,4 +28,16 @@ public class Vector2 {
         }
         return new Vector2(this.x / length, this.y / length);
     }
+
+    public Vector2 flippityDipped(){
+        return new Vector2(-this.x, -this.y);
+    }
+
+    public Vector2 rotated(double radians){
+        return new Vector2((this.x * Math.cos(radians)) - (this.y * Math.sin(radians)), (this.x * Math.sin(radians)) + (this.y * Math.cos(radians)));
+    }
+
+    public double Average(){
+        return ((this.x + this.y) / 2);
+    }
 }
