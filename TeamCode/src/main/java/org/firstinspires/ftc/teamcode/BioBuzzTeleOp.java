@@ -60,6 +60,7 @@
 
      private DcMotor intake = null;
      private DcMotor turitbass = null;
+     private DcMotorEx hopper = null;
 
      private double x;
      private double y;
@@ -72,6 +73,7 @@
      private double Vy;
      private double Vx;
      private double Distince;
+
 
 
 
@@ -109,6 +111,7 @@
          turitbass = hardwareMap.get(DcMotor.class,"turit_bass");
          luancherMoter = hardwareMap.get(DcMotorEx.class,"launcher_moter");
          launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
+         hopper = hardwareMap.get(DcMotorEx.class,"Hopper_moter");
 
 
 
@@ -137,6 +140,12 @@
              leftFrontDrive.setPower(y+x +gamepad1.right_stick_x);
              rightFrontDrive.setPower(y -x -gamepad1.right_stick_x);
 
+             leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+             leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+             rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+             rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+             turitbass.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
 
              //------------------------------------------------------------------------------------
@@ -144,7 +153,7 @@
 
 
 
-
+            Distince = 0.5;
 
              Math.atan( Vy/Vx);
 
@@ -159,6 +168,13 @@
 
              launcherServo.setPosition(launchAngle);
              luancherMoter.setVelocity(2800*launchSpeed);
+             if(gamepad2.left_bumper)
+             {
+                 hopper.setPower(1);
+             }
+             turitbass.setPower(gamepad2.left_stick_x);
+
+
 
 
 
