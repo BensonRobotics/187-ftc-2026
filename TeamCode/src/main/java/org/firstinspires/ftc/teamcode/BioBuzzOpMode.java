@@ -26,6 +26,8 @@ package org.firstinspires.ftc.teamcode;
  */
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -34,7 +36,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import java.util.List;
 
 @TeleOp(name = "BioBuzz187 2026", group = "Robot")
 public class BioBuzzOpMode extends OpMode {
@@ -54,42 +64,23 @@ public class BioBuzzOpMode extends OpMode {
     private HiveDetector9001 Limelight;
     GoBildaPinpointDriver Odometry;
 
-    private boolean auto_mave;
-
     private BioBuzzColorDistanceSensor cdSensor;
-    private class Vector2 {
-        public double x;
-        public double y;
-
-        // Default constructor (0, 0)
-        public Vector2() {
-            this.x = 0;
-            this.y = 0;
-        }
-
-        // Constructor with coordinates
-        public Vector2(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    private Vector2 end_pos;
-
     private double end_pos_x;
     private double end_pos_y;
 
     private Servo snowPlowServo;
 
+    private DcMotor turretMotor;
+
 
     // -- Subsystems (rename/add per robot) --
-    // private DcMotor intakeMotor;
-    // private DcMotorEx revolverMotor;
-    // private DcMotorEx launchMotor;
-    // private Servo    kickerServo;
+     private DcMotor intakeMotor;
+     private DcMotorEx revolverMotor;
+     private DcMotorEx launchMotor;
+     private Servo    kickerServo;
 
     // -- Sensors --
-    // private IMU imu;
+     private IMU imu;
     // private NormalizedColorSensor colorSensor;
 
     // =====================================================================
@@ -102,6 +93,7 @@ public class BioBuzzOpMode extends OpMode {
     // private boolean someStepDoneYet = false;
 
 
+
     // @Override
     public void init() {
         // =================================================================
@@ -111,10 +103,8 @@ public class BioBuzzOpMode extends OpMode {
         // =================================================================
 
 
-
-        cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
+//        cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
         // You need to initialize it
-
         Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
         Odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         Odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
@@ -174,34 +164,12 @@ public class BioBuzzOpMode extends OpMode {
         // =================================================================
 
         // --- 6a. Read driver input (gamepad1 / gamepad2), if teleop ---
-        double distancemm = cdSensor.GetDistance();
-        BioBuzzColorDistanceSensor.color color = cdSensor.GetColor();
-        telemetry.addData("color", color);
-        telemetry.addData("distance (mm)", "%.3f", distancemm);
-        telemetry.update();
-
-        if (gamepad1.xWasPressed()) {
-            auto_mave = !auto_mave;
-            Odometry.setPosX(0.0, DistanceUnit.METER);
-            Odometry.setPosY(0.0, DistanceUnit.METER);
-            end_pos_x = 1.0;
-            end_pos_y = 0.5;
-        }
-
-        if (auto_mave) {
-            if (!(Odometry.getPosition().getX(DistanceUnit.METER) >= end_pos_x)) {
-                XYdrive.driveXY(0.2, 0.0, 0.0);
-            }
-            else if (!(Odometry.getPosition().getY(DistanceUnit.METER) >= end_pos_y)) {
-                XYdrive.driveXY(0.0, 0.2, 0.0);
-            }
-            else {
-                auto_mave = false;
-                XYdrive.stop();
-            }
-        } else {
+//        double distancemm = cdSensor.GetDistance();
+//        BioBuzzColorDistanceSensor.color color = cdSensor.GetColor();
+//        telemetry.addData("color", color);
+//        telemetry.addData("distance (mm)", "%.3f", distancemm);
+//
             XYdrive.driveXY(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
-        }
 
         // --- 6b. Drivetrain: turn input into wheel power ---
 
@@ -211,15 +179,14 @@ public class BioBuzzOpMode extends OpMode {
         // --- 6d. Sensor reads (color sensor, vision, IMU heading) ---
 
         Odometry.update();
+//        List<AprilTagDetection> apriltagsdata = Limelight.GetResults();
+//        // --- 6e. Telemetry (always end the loop with this) ---
+//        telemetry.addData("AprilTags", apriltagsdata);
 
         // --- 6e. Telemetry (always end the loop with this) ---
 
         // telemetry.update();
 
-        telemetry.addData("OdomX", Odometry.getPosX(DistanceUnit.METER));
-        telemetry.addData("OdomY", Odometry.getPosY(DistanceUnit.METER));
-        telemetry.addData("OdomX", end_pos_x);
-        telemetry.addData("OdomY", end_pos_y);
 
 
 
