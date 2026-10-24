@@ -56,7 +56,7 @@ public class BioBuzzOpMode extends OpMode {
 
     private boolean auto_mave;
 
-    private BioBuzzColorDistanceSensor cdSensor;
+    //private BioBuzzColorDistanceSensor cdSensor;
     private class Vector2 {
         public double x;
         public double y;
@@ -112,7 +112,7 @@ public class BioBuzzOpMode extends OpMode {
 
 
 
-        cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
+        //cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
         // You need to initialize it
 
         Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
@@ -174,11 +174,11 @@ public class BioBuzzOpMode extends OpMode {
         // =================================================================
 
         // --- 6a. Read driver input (gamepad1 / gamepad2), if teleop ---
-        double distancemm = cdSensor.GetDistance();
-        BioBuzzColorDistanceSensor.color color = cdSensor.GetColor();
-        telemetry.addData("color", color);
-        telemetry.addData("distance (mm)", "%.3f", distancemm);
-        telemetry.update();
+        //double distancemm = cdSensor.GetDistance();
+        //BioBuzzColorDistanceSensor.color color = cdSensor.GetColor();
+        //telemetry.addData("color", color);
+        //telemetry.addData("distance (mm)", "%.3f", distancemm);
+        //telemetry.update();
 
         if (gamepad1.xWasPressed()) {
             auto_mave = !auto_mave;
