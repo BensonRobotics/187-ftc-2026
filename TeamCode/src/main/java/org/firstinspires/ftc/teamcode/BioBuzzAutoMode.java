@@ -122,7 +122,7 @@ public class BioBuzzAutoMode extends OpMode {
         odom_end_pos_x = 1.0;
         odom_end_pos_y = -1.0;
 
-        Limelight = new HiveDetector9001(hardwareMap, "LimeLight");
+        Limelight = new HiveDetector9001(hardwareMap, "limelight");
         XYdrive = new MecanumDrive(hardwareMap, "FrontLeft", "BackLeft", "FrontRight", "BackRight");
         // 3 -- BackRight, 2 -- BackLeft, 1 -- FrontRight, 0 -- FrontLeft //
 
