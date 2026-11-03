@@ -128,7 +128,7 @@ public class BioBuzzOpMode extends OpMode {
 
 
 
-        Limelight = new HiveDetector9001(hardwareMap, "LimeLight");
+        Limelight = new HiveDetector9001(hardwareMap, "limelight");
         XYdrive = new MecanumDrive(hardwareMap, "FrontLeft", "BackLeft", "FrontRight", "BackRight");
         // 3 -- BackRight, 2 -- BackLeft, 1 -- FrontRight, 0 -- FrontLeft //
 
