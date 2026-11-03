@@ -31,15 +31,11 @@
 
  import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
  import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
- import com.qualcomm.robotcore.eventloop.opmode.OpMode;
  import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  import com.qualcomm.robotcore.hardware.DcMotor;
  import com.qualcomm.robotcore.hardware.DcMotorEx;
- import com.qualcomm.robotcore.hardware.DcMotorSimple;
- import com.qualcomm.robotcore.hardware.Gamepad;
  import com.qualcomm.robotcore.hardware.IMU;
  import com.qualcomm.robotcore.hardware.Servo;
- import com.qualcomm.robotcore.util.ElapsedTime;
 
  import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -55,12 +51,11 @@
      private DcMotor leftBackDrive = null;
      private DcMotor rightFrontDrive = null;
      private DcMotor rightBackDrive = null;
-     private DcMotorEx luancherMoter = null;
-     private Servo launcherServo = null;
-
-     private DcMotor intake = null;
-     private DcMotor turitbass = null;
-     private DcMotorEx hopper = null;
+ //    private DcMotorEx launcherMotor = null;
+    //private Servo launcherServo = null;
+   //  private DcMotor intake = null;
+//private DcMotor turretbase = null;
+   //  private DcMotorEx hopper = null;
 
      private double x;
      private double y;
@@ -72,7 +67,7 @@
      private double launchSpeed;
      private double Vy;
      private double Vx;
-     private double Distince;
+     private double Distance;
 
 
 
@@ -91,7 +86,7 @@
          imu = hardwareMap.get(IMU.class, "imu");
          // Adjust the orientation parameters to match your robot
          IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                  RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
          // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
          imu.initialize(parameters);
@@ -107,20 +102,24 @@
          leftBackDrive  = hardwareMap.get(DcMotor.class, "BackLeft");
          rightFrontDrive = hardwareMap.get(DcMotor.class, "FrontRight");
          rightBackDrive = hardwareMap.get(DcMotor.class, "BackRight");
-         intake = hardwareMap.get(DcMotor.class,"intake_moter");
-         turitbass = hardwareMap.get(DcMotor.class,"turit_bass");
-         luancherMoter = hardwareMap.get(DcMotorEx.class,"launcher_moter");
-         launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
-         hopper = hardwareMap.get(DcMotorEx.class,"Hopper_moter");
+        // intake = hardwareMap.get(DcMotor.class,"intake_motor");
+      //   turretbase = hardwareMap.get(DcMotor.class,"turret_base");
+        // launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher_motor");
+        // launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
+       // hopper = hardwareMap.get(DcMotorEx.class,"Hopper_motor");
 
-
+         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         ////  turretbase.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 
 
          waitForStart();
          while (opModeIsActive()){
-             intake.setPower(1);
+        //     intake.setPower(1);
 
 
             if(gamepad1.x)
@@ -132,19 +131,15 @@
              stickmag = Math.hypot( gamepad1.left_stick_x , -gamepad1.left_stick_y);
              feldthata = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-             x = Math.sin(feldthata+stickthata)*stickmag;
-             y = Math.cos(feldthata+stickthata)*stickmag;
+             x = Math.sin(stickthata-feldthata)*stickmag;
+             y = Math.cos(stickthata-feldthata)*stickmag;
 
              leftBackDrive.setPower(y -x +gamepad1.right_stick_x);
              rightBackDrive.setPower(y+ x -gamepad1.right_stick_x);
              leftFrontDrive.setPower(y+x +gamepad1.right_stick_x);
              rightFrontDrive.setPower(y -x -gamepad1.right_stick_x);
 
-             leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-             leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-             rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-             rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-             turitbass.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
 
 
@@ -153,26 +148,26 @@
 
 
 
-            Distince = 0.5;
+            Distance = 0.5;
 
-             Math.atan( Vy/Vx);
+             Math.atan(Vy/Vx);
 
-             Vx = Math.pow(Distince,4)*(-0.123)+Math.pow(Distince,3)*(0.5)-Math.pow(Distince,2)*(0.978)+Distince*(2.13)-0.004;
+             Vx = Math.pow(Distance,4)*(-0.123)+Math.pow(Distance,3)*(0.5)-Math.pow(Distance,2)*(0.978)+ Distance *(2.13)-0.004;
 
-             Vy=(4.9*Math.pow(Distince/Vx,2)+1.1)/(Distince/Vx);
+             Vy=(4.9*Math.pow(Distance /Vx,2)+1.1)/(Distance /Vx);
 
              launchAngle = Math.atan(Vy/Vx);
 
-             launchSpeed = ((60*Math.sqrt(Math.pow(1.1,2)+Math.pow(Distince,2))/Math.PI*0.048)/6000)+0.53;
+             launchSpeed = ((60*Math.sqrt(Math.pow(1.1,2)+Math.pow(Distance,2))/Math.PI*0.048)/6000)+0.53;
 
 
-             launcherServo.setPosition(launchAngle);
-             luancherMoter.setVelocity(2800*launchSpeed);
-             if(gamepad2.left_bumper)
-             {
-                 hopper.setPower(1);
-             }
-             turitbass.setPower(gamepad2.left_stick_x);
+           //  launcherServo.setPosition(launchAngle);
+            // launcherMotor.setVelocity(2800*launchSpeed);
+         //    if(gamepad2.left_bumper)
+           //  {
+          //       hopper.setPower(1);
+           //  }
+           //  turretbase.setPower(gamepad2.left_stick_x);
 
 
 

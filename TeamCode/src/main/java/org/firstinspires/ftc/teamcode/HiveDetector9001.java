@@ -30,6 +30,6 @@ public class HiveDetector9001 {
         limelight.start();
 
     }
-     public void Update(){
+     public void getResults(){
 
    }}

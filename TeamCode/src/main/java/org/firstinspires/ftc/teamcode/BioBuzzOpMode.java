@@ -34,6 +34,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "BioBuzz187 2026", group = "Robot")
@@ -83,13 +87,13 @@ public class BioBuzzOpMode extends OpMode {
 
 
     // -- Subsystems (rename/add per robot) --
-    // private DcMotor intakeMotor;
-    // private DcMotorEx revolverMotor;
-    // private DcMotorEx launchMotor;
-    // private Servo    kickerServo;
+     private DcMotor intakeMotor;
+     private DcMotorEx revolverMotor;
+     private DcMotorEx launchMotor;
+     private Servo    kickerServo;
 
     // -- Sensors --
-    // private IMU imu;
+     private IMU imu;
     // private NormalizedColorSensor colorSensor;
 
     // =====================================================================
@@ -180,28 +184,7 @@ public class BioBuzzOpMode extends OpMode {
         //telemetry.addData("distance (mm)", "%.3f", distancemm);
         //telemetry.update();
 
-        if (gamepad1.xWasPressed()) {
-            auto_mave = !auto_mave;
-            Odometry.setPosX(0.0, DistanceUnit.METER);
-            Odometry.setPosY(0.0, DistanceUnit.METER);
-            end_pos_x = 1.0;
-            end_pos_y = 0.5;
-        }
-
-        if (auto_mave) {
-            if (!(Odometry.getPosition().getX(DistanceUnit.METER) >= end_pos_x)) {
-                XYdrive.driveXY(0.2, 0.0, 0.0);
-            }
-            else if (!(Odometry.getPosition().getY(DistanceUnit.METER) >= end_pos_y)) {
-                XYdrive.driveXY(0.0, 0.2, 0.0);
-            }
-            else {
-                auto_mave = false;
-                XYdrive.stop();
-            }
-        } else {
             XYdrive.driveXY(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
-        }
 
         // --- 6b. Drivetrain: turn input into wheel power ---
 
@@ -214,12 +197,8 @@ public class BioBuzzOpMode extends OpMode {
 
         // --- 6e. Telemetry (always end the loop with this) ---
 
-        // telemetry.update();
+        telemetry.update();
 
-        telemetry.addData("OdomX", Odometry.getPosX(DistanceUnit.METER));
-        telemetry.addData("OdomY", Odometry.getPosY(DistanceUnit.METER));
-        telemetry.addData("OdomX", end_pos_x);
-        telemetry.addData("OdomY", end_pos_y);
 
 
 
