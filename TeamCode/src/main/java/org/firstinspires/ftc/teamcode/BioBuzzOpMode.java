@@ -31,6 +31,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
+import java.util.Map;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -194,9 +196,11 @@ public class BioBuzzOpMode extends OpMode {
         // --- 6d. Sensor reads (color sensor, vision, IMU heading) ---
 
         Odometry.update();
+        Map<Integer, AprilTag187> apriltagsdata = Limelight.Update();
 
         // --- 6e. Telemetry (always end the loop with this) ---
 
+        telemetry.addData("AprilTags", apriltagsdata);
         telemetry.update();
 
 
