@@ -54,9 +54,7 @@
      private DcMotor rightBackDrive = null;
     private DcMotorEx launcherMotor = null;
     private Servo launcherServo = null;
-     private DcMotorEx intake = null;
-//private DcMotor turretbase = null;
-     private DcMotorEx hopper = null;
+     private DcMotor intake = null;
 
      private double x;
      private double y;
@@ -103,11 +101,9 @@
          leftBackDrive  = hardwareMap.get(DcMotor.class, "BackLeft");
          rightFrontDrive = hardwareMap.get(DcMotor.class, "FrontRight");
          rightBackDrive = hardwareMap.get(DcMotor.class, "BackRight");
-        intake = hardwareMap.get(DcMotorEx.class,"intake_motor");
-      //   turretbase = hardwareMap.get(DcMotor.class,"turret_base");
+         intake = hardwareMap.get(DcMotor.class,"intake_motor");
          launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher_motor");
          launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
-       hopper = hardwareMap.get(DcMotorEx.class,"Hopper_motor");
 
          leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
          leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -120,13 +116,17 @@
 
          waitForStart();
          while (opModeIsActive()){
-            intake.setPower(1);
+
+             if(gamepad1.a)
+             {
+                 intake.setPower(-1);
+             }
+
 
             if(gamepad1.x)
             {
                 imu.resetYaw();
             }
-
              stickthata = Math.atan2( -gamepad1.left_stick_y , gamepad1.left_stick_x );
              stickmag = Math.hypot( gamepad1.left_stick_x , -gamepad1.left_stick_y);
              feldthata = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -139,15 +139,6 @@
              leftFrontDrive.setPower(y+x +gamepad1.right_stick_x);
              rightFrontDrive.setPower(y -x -gamepad1.right_stick_x);
 
-             if(gamepad1.left_bumper)
-             {
-                 hopper.setPower(1);
-             }
-
-             if(intake.getVelocity(AngleUnit.RADIANS)<20){
-                 hopper.setPower(0.1);
-             }
-
 
 
 
@@ -159,7 +150,7 @@
 
             Distance = 0.5;
 
-             Math.atan(Vy/Vx);
+           //  Math.atan(Vy/Vx);
 
              Vx = Math.pow(Distance,4)*(-0.123)+Math.pow(Distance,3)*(0.5)-Math.pow(Distance,2)*(0.978)+ Distance *(2.13)-0.004;
 
@@ -170,10 +161,8 @@
              launchSpeed = ((60*Math.sqrt(Math.pow(1.1,2)+Math.pow(Distance,2))/Math.PI*0.048)/6000)+0.53;
 
 
-            launcherServo.setPosition(launchAngle);
+             launcherServo.setPosition(launchAngle);
              launcherMotor.setVelocity(2800*launchSpeed);
-
-
 
 
 
