@@ -34,6 +34,7 @@
  import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  import com.qualcomm.robotcore.hardware.DcMotor;
  import com.qualcomm.robotcore.hardware.DcMotorEx;
+ import com.qualcomm.robotcore.hardware.Gamepad;
  import com.qualcomm.robotcore.hardware.IMU;
  import com.qualcomm.robotcore.hardware.Servo;
 
@@ -51,11 +52,11 @@
      private DcMotor leftBackDrive = null;
      private DcMotor rightFrontDrive = null;
      private DcMotor rightBackDrive = null;
- //    private DcMotorEx launcherMotor = null;
-    //private Servo launcherServo = null;
-   //  private DcMotor intake = null;
+    private DcMotorEx launcherMotor = null;
+    private Servo launcherServo = null;
+     private DcMotorEx intake = null;
 //private DcMotor turretbase = null;
-   //  private DcMotorEx hopper = null;
+     private DcMotorEx hopper = null;
 
      private double x;
      private double y;
@@ -102,11 +103,11 @@
          leftBackDrive  = hardwareMap.get(DcMotor.class, "BackLeft");
          rightFrontDrive = hardwareMap.get(DcMotor.class, "FrontRight");
          rightBackDrive = hardwareMap.get(DcMotor.class, "BackRight");
-        // intake = hardwareMap.get(DcMotor.class,"intake_motor");
+        intake = hardwareMap.get(DcMotorEx.class,"intake_motor");
       //   turretbase = hardwareMap.get(DcMotor.class,"turret_base");
-        // launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher_motor");
-        // launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
-       // hopper = hardwareMap.get(DcMotorEx.class,"Hopper_motor");
+         launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher_motor");
+         launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
+       hopper = hardwareMap.get(DcMotorEx.class,"Hopper_motor");
 
          leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
          leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -119,8 +120,7 @@
 
          waitForStart();
          while (opModeIsActive()){
-        //     intake.setPower(1);
-
+            intake.setPower(1);
 
             if(gamepad1.x)
             {
@@ -138,6 +138,15 @@
              rightBackDrive.setPower(y+ x -gamepad1.right_stick_x);
              leftFrontDrive.setPower(y+x +gamepad1.right_stick_x);
              rightFrontDrive.setPower(y -x -gamepad1.right_stick_x);
+
+             if(gamepad1.left_bumper)
+             {
+                 hopper.setPower(1);
+             }
+
+             if(intake.getVelocity(AngleUnit.RADIANS)<20){
+                 hopper.setPower(0.1);
+             }
 
 
 
@@ -161,13 +170,11 @@
              launchSpeed = ((60*Math.sqrt(Math.pow(1.1,2)+Math.pow(Distance,2))/Math.PI*0.048)/6000)+0.53;
 
 
-           //  launcherServo.setPosition(launchAngle);
-            // launcherMotor.setVelocity(2800*launchSpeed);
-         //    if(gamepad2.left_bumper)
-           //  {
-          //       hopper.setPower(1);
-           //  }
-           //  turretbase.setPower(gamepad2.left_stick_x);
+            launcherServo.setPosition(launchAngle);
+             launcherMotor.setVelocity(2800*launchSpeed);
+
+
+
 
 
 
