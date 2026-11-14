@@ -139,10 +139,7 @@ public class BioBuzzAutoMode extends OpMode {
 
     // @Override
     public void start() {
-        // =================================================================
-        // 5. Runs exactly once, right when PLAY is pressed.
-        //    Reset timers/state here so they start counting from "now".
-        // =================================================================
+        XYdrive.driveXY(0.0, 0.2, 0.0);
     }
 
 
@@ -152,13 +149,22 @@ public class BioBuzzAutoMode extends OpMode {
         // 6. MAIN LOOP — called repeatedly (nominally every ~20ms) until
         //    the OpMode is stopped. MUST NOT BLOCK.
         // =================================================================
-        if (Odometry.getPosition().getX(DistanceUnit.METER) != odom_end_pos_x) {
-            XYdrive.driveXY(odom_end_pos_x, 0.0, 0.0);
-        }else if (Odometry.getPosition().getY(DistanceUnit.METER) != odom_end_pos_y) {
-            XYdrive.driveXY(0.0, odom_end_pos_y, 0.0);
-        }
 
         Odometry.update();
+
+        boolean parking = false;
+        double driveoutamount = 12.0;
+
+        if (!parking) {
+            if (Odometry.getPosY(DistanceUnit.INCH) > driveoutamount) {
+                parking = true;
+                XYdrive.driveXY(0.0, -0.2, 0.0);
+            }
+        } else {
+            if (Odometry.getPosY(DistanceUnit.INCH) < 0.2) {
+                XYdrive.stop();
+            }
+        }
     }
 
     // @Override
