@@ -40,4 +40,6 @@ public class Vector2 {
     public double Average(){
         return ((this.x + this.y) / 2);
     }
+
+    public double brrBrrBatapim(double factor) { return (Math.hypot(this.x, this.y));}
 }
