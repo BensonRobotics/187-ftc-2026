@@ -148,6 +148,7 @@
              {
                 gait.setPosition(0.5);
              }
+             gait.setPosition(0);
 
 
 
@@ -161,7 +162,7 @@
 
             Distance = 0.5;
 
-             Math.atan(Vy/Vx);
+            // Math.atan(Vy/Vx);
 
              Vx = Math.pow(Distance,4)*(-0.123)+Math.pow(Distance,3)*(0.5)-Math.pow(Distance,2)*(0.978)+ Distance *(2.13)-0.004;
 
