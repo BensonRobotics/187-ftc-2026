@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorLimelight3A;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -13,7 +15,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HiveDetector9001 {
 
@@ -27,9 +31,31 @@ public class HiveDetector9001 {
         //Set poll rate (Refresh Rate)
         limelight.setPollRateHz(80);
 
+        limelight.pipelineSwitch(0);
+
         limelight.start();
 
     }
-     public void getResults(){
+     public Map<Integer, AprilTag187> GetLatestResults(){
+        LLResult latestresult = limelight.getLatestResult();
 
-   }}
+
+        List<LLResultTypes.FiducialResult> fiducialResults = latestresult.getFiducialResults();
+
+        Map<Integer, AprilTag187> metadata = new HashMap<>();
+
+         for (LLResultTypes.FiducialResult fiducial : fiducialResults) {
+             int id = fiducial.getFiducialId();
+             double tx = fiducial.getTargetXDegrees();
+             double ty = fiducial.getTargetYDegrees();
+             double ta = fiducial.getTargetArea();
+             Pose3D pose = fiducial.getTargetPoseCameraSpace();
+             metadata.put(id, new AprilTag187(id, tx, ty, ta, pose));
+         }
+
+         return metadata;
+
+     }
+
+}
+

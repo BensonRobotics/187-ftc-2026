@@ -31,6 +31,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -83,6 +87,9 @@ public class BioBuzzOpMode extends OpMode {
     private double end_pos_x;
     private double end_pos_y;
 
+    //Can be "Red" or "Blue"
+    private String team;
+
     private Servo snowPlowServo;
 
 
@@ -119,15 +126,15 @@ public class BioBuzzOpMode extends OpMode {
         //cdSensor = hardwareMap.get(BioBuzzColorDistanceSensor.class, "colordistanceSensor");
         // You need to initialize it
 
-        Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
-        Odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        Odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+//        Odometry = hardwareMap.get(GoBildaPinpointDriver.class, "Odometry");
+//        Odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+//        Odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
 
 
 
-        Limelight = new HiveDetector9001(hardwareMap, "LimeLight");
-        XYdrive = new MecanumDrive(hardwareMap, "FrontLeft", "BackLeft", "FrontRight", "BackRight");
+        Limelight = new HiveDetector9001(hardwareMap, "limelight");
+        //XYdrive = new MecanumDrive(hardwareMap, "FrontLeft", "BackLeft", "FrontRight", "BackRight");
         // 3 -- BackRight, 2 -- BackLeft, 1 -- FrontRight, 0 -- FrontLeft //
 
     }
@@ -151,20 +158,20 @@ public class BioBuzzOpMode extends OpMode {
 
     // @Override
     public void RunOpmode() {
-        if (gamepad1.left_bumper) {
-            if (snowPlowServo.getPosition()>0.01){
-                snowPlowServo.setPosition(0.0);
-            }
-            else {
-                snowPlowServo.setPosition(0.3694);
-            }
-        }
-        // Move servo to midway position (approx 90/180 degrees)
-
-
-        // Send telemetry data to the Driver Station
-        telemetry.addData("Servo Position", snowPlowServo.getPosition());
-        telemetry.update();
+//        if (gamepad1.left_bumper) {
+//            if (snowPlowServo.getPosition()>0.01){
+//                snowPlowServo.setPosition(0.0);
+//            }
+//            else {
+//                snowPlowServo.setPosition(0.3694);
+//            }
+//        }
+//        // Move servo to midway position (approx 90/180 degrees)
+//
+//
+//        // Send telemetry data to the Driver Station
+//        telemetry.addData("Servo Position", snowPlowServo.getPosition());
+//        telemetry.update();
     }
 
     private void wait(boolean b) {
@@ -184,7 +191,7 @@ public class BioBuzzOpMode extends OpMode {
         //telemetry.addData("distance (mm)", "%.3f", distancemm);
         //telemetry.update();
 
-            XYdrive.driveXY(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+//            XYdrive.driveXY(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
 
         // --- 6b. Drivetrain: turn input into wheel power ---
 
@@ -193,13 +200,65 @@ public class BioBuzzOpMode extends OpMode {
 
         // --- 6d. Sensor reads (color sensor, vision, IMU heading) ---
 
-        Odometry.update();
+//        Odometry.update();
+        Map<Integer, AprilTag187> apriltagsdata = Limelight.GetLatestResults();
+
+
+//        apriltagsdata.forEach((key, apriltag) -> {
+//            double pitchtolerance = 45.0;
+//            if (apriltag.pose.getOrientation().getPitch() < pitchtolerance) {
+//                if (Objects.equals(apriltag.getQuadrant(), "Red Audience") || Objects.equals(apriltag.getQuadrant(), "Red Scoring")) {
+//                    if (Objects.equals(team, "Red")) {
+//                        kickerServo.setPosition(apriltag.tx);
+//                    }
+//                } else if (Objects.equals(apriltag.getQuadrant(), "Blue Audience") || Objects.equals(apriltag.getQuadrant(), "Blue Scoring")) {
+//                    if (Objects.equals(team, "Blue")) {
+//                        kickerServo.setPosition(apriltag.tx);
+//                    }
+//                }
+//            }
+//        });
+
+        apriltagsdata.forEach((key, apriltag) -> {
+            double pitchtolerance = 45.0;
+            double servomovespeed = 0.1;
+            if (apriltag.pose.getOrientation().getPitch() < pitchtolerance) {
+                if (Objects.equals(apriltag.getQuadrant(), "Red Audience") || Objects.equals(apriltag.getQuadrant(), "Red Scoring")) {
+                    if (Objects.equals(team, "Red")) {
+                        if (apriltag.tx < 0.0) {
+                            kickerServo.setPosition(kickerServo.getPosition() - servomovespeed);
+                        } else {
+                            kickerServo.setPosition(kickerServo.getPosition() + servomovespeed);
+                        }
+                    }
+                } else if (Objects.equals(apriltag.getQuadrant(), "Blue Audience") || Objects.equals(apriltag.getQuadrant(), "Blue Scoring")) {
+                    if (Objects.equals(team, "Blue")) {
+                        if (apriltag.tx < 0.0) {
+                            kickerServo.setPosition(kickerServo.getPosition() - servomovespeed);
+                        } else {
+                            kickerServo.setPosition(kickerServo.getPosition() + servomovespeed);
+                        }
+                    }
+                }
+            }
+        });
+
+
 
         // --- 6e. Telemetry (always end the loop with this) ---
 
+        telemetry.addData("AprilTags", apriltagsdata);
         telemetry.update();
 
-
+//    Code for riboflavin maneuver
+        //----------------------------------------------------
+        //
+        //VERY IMPORTANT!!! CODE WILL BREAK IF THIS IS GONE!!!
+        //
+        //----------------------------------------------------
+        if (gamepad1.y) {
+            XYdrive.drive(67,67,67);
+        }
 
 
     }
@@ -212,8 +271,8 @@ public class BioBuzzOpMode extends OpMode {
         //    every motor is explicitly set to zero power.
         // =================================================================
 
-        XYdrive.stop();
-        snowPlowServo.setPosition(0.0);
+//        XYdrive.stop();
+//        snowPlowServo.setPosition(0.0);
     }
 
 
