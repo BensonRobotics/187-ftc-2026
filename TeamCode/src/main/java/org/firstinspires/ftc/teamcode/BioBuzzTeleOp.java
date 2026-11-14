@@ -69,6 +69,7 @@
      private double Vy;
      private double Vx;
      private double Distance;
+     private Servo gait;
 
 
 
@@ -104,7 +105,6 @@
          rightFrontDrive = hardwareMap.get(DcMotor.class, "FrontRight");
          rightBackDrive = hardwareMap.get(DcMotor.class, "BackRight");
         intake = hardwareMap.get(DcMotorEx.class,"intake_motor");
-      //   turretbase = hardwareMap.get(DcMotor.class,"turret_base");
          launcherMotor = hardwareMap.get(DcMotorEx.class,"launcher_motor");
          launcherServo = hardwareMap.get(Servo.class,"launcher_servo");
        hopper = hardwareMap.get(DcMotorEx.class,"Hopper_motor");
@@ -113,14 +113,19 @@
          leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
          rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
          rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-         ////  turretbase.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 
 
          waitForStart();
          while (opModeIsActive()){
-            intake.setPower(1);
+             if(gamepad1.a)
+             {
+                 intake.setPower(-1);
+             }else
+             {
+                 intake.setPower(1);
+             }
 
             if(gamepad1.x)
             {
@@ -141,12 +146,9 @@
 
              if(gamepad1.left_bumper)
              {
-                 hopper.setPower(1);
+                gait.setPosition(0.5);
              }
 
-             if(intake.getVelocity(AngleUnit.RADIANS)<20){
-                 hopper.setPower(0.1);
-             }
 
 
 
