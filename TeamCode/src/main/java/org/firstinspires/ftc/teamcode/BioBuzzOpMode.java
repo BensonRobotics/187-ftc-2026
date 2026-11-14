@@ -26,18 +26,14 @@ package org.firstinspires.ftc.teamcode;
  */
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -65,22 +61,6 @@ public class BioBuzzOpMode extends OpMode {
     private boolean auto_mave;
 
     //private BioBuzzColorDistanceSensor cdSensor;
-    private class Vector2 {
-        public double x;
-        public double y;
-
-        // Default constructor (0, 0)
-        public Vector2() {
-            this.x = 0;
-            this.y = 0;
-        }
-
-        // Constructor with coordinates
-        public Vector2(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
 
     private Vector2 end_pos;
 
@@ -206,62 +186,50 @@ public class BioBuzzOpMode extends OpMode {
 
 //        apriltagsdata.forEach((key, apriltag) -> {
 //            double pitchtolerance = 45.0;
+//            double servomovespeed = 0.1;
 //            if (apriltag.pose.getOrientation().getPitch() < pitchtolerance) {
 //                if (Objects.equals(apriltag.getQuadrant(), "Red Audience") || Objects.equals(apriltag.getQuadrant(), "Red Scoring")) {
 //                    if (Objects.equals(team, "Red")) {
-//                        kickerServo.setPosition(apriltag.tx);
+//                        if (apriltag.tx < 0.0) {
+//                            //REPLACE KICKERSERVO WITH SOMETHING ELSE!
+//                            kickerServo.setPosition(kickerServo.getPosition() - servomovespeed);
+//                        } else {
+//                            kickerServo.setPosition(kickerServo.getPosition() + servomovespeed);
+//                        }
 //                    }
 //                } else if (Objects.equals(apriltag.getQuadrant(), "Blue Audience") || Objects.equals(apriltag.getQuadrant(), "Blue Scoring")) {
 //                    if (Objects.equals(team, "Blue")) {
-//                        kickerServo.setPosition(apriltag.tx);
+//                        if (apriltag.tx < 0.0) {
+//                            kickerServo.setPosition(kickerServo.getPosition() - servomovespeed);
+//                        } else {
+//                            kickerServo.setPosition(kickerServo.getPosition() + servomovespeed);
+//                        }
 //                    }
 //                }
 //            }
 //        });
 
-        apriltagsdata.forEach((key, apriltag) -> {
-            double pitchtolerance = 45.0;
-            double servomovespeed = 0.1;
-            if (apriltag.pose.getOrientation().getPitch() < pitchtolerance) {
-                if (Objects.equals(apriltag.getQuadrant(), "Red Audience") || Objects.equals(apriltag.getQuadrant(), "Red Scoring")) {
-                    if (Objects.equals(team, "Red")) {
-                        if (apriltag.tx < 0.0) {
-                            kickerServo.setPosition(kickerServo.getPosition() - servomovespeed);
-                        } else {
-                            kickerServo.setPosition(kickerServo.getPosition() + servomovespeed);
+        AtomicReference<Double> TXsum = new AtomicReference<>(0.0);
+        AtomicInteger apriltagcount = new AtomicInteger();
+            apriltagsdata.forEach((key, apriltag) -> {
+                double pitchtolerance = 45.0;
+                if (apriltag.pose.getOrientation().getPitch() < pitchtolerance) {
+                    if ((Objects.equals(apriltag.getQuadrant(), "Red Audience") || Objects.equals(apriltag.getQuadrant(), "Red Scoring")) && (Objects.equals(team, "Red"))) {
+                        TXsum.updateAndGet(v -> new Double((double) (v + apriltag.tx)));
+                        apriltagcount.addAndGet(1);
+                    } else if ((Objects.equals(apriltag.getQuadrant(), "Blue Audience") || Objects.equals(apriltag.getQuadrant(), "Blue Scoring")) && (Objects.equals(team, "Blue"))) {
+                        {
+                            TXsum.updateAndGet(v -> new Double((double) (v + apriltag.tx)));
+                            apriltagcount.addAndGet(1);
                         }
                     }
-                } else if (Objects.equals(apriltag.getQuadrant(), "Blue Audience") || Objects.equals(apriltag.getQuadrant(), "Blue Scoring")) {
-                    if (Objects.equals(team, "Blue")) {
-                        if (apriltag.tx < 0.0) {
-                            kickerServo.setPosition(kickerServo.getPosition() - servomovespeed);
-                        } else {
-                            kickerServo.setPosition(kickerServo.getPosition() + servomovespeed);
-                        }
-                    }
+                    kickerServo.setPosition(TXsum.get() / apriltagcount.get());
                 }
-            }
-        });
 
 
+                // --- 6e. Telemetry (always end the loop with this) ---
 
-        // --- 6e. Telemetry (always end the loop with this) ---
-
-        telemetry.addData("AprilTags", apriltagsdata);
-        telemetry.update();
-
-//    Code for riboflavin maneuver
-        //----------------------------------------------------
-        //
-        //VERY IMPORTANT!!! CODE WILL BREAK IF THIS IS GONE!!!
-        //
-        //----------------------------------------------------
-        if (gamepad1.y) {
-            XYdrive.drive(67,67,67);
-        }
-
-
-    }
+            });}
 
     // @Override
     public void stop() {
