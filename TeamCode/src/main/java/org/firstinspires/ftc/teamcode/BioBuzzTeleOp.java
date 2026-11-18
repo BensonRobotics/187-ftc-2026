@@ -34,6 +34,7 @@
  import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  import com.qualcomm.robotcore.hardware.DcMotor;
  import com.qualcomm.robotcore.hardware.DcMotorEx;
+ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  import com.qualcomm.robotcore.hardware.Gamepad;
  import com.qualcomm.robotcore.hardware.IMU;
  import com.qualcomm.robotcore.hardware.Servo;
@@ -110,6 +111,8 @@
          rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
          rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
          ////  turretbase.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
 
 
@@ -131,8 +134,8 @@
              stickmag = Math.hypot( gamepad1.left_stick_x , -gamepad1.left_stick_y);
              feldthata = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-             x = Math.sin(stickthata-feldthata)*stickmag;
-             y = Math.cos(stickthata-feldthata)*stickmag;
+             x = Math.sin(stickthata+feldthata)*stickmag;
+             y = Math.cos(stickthata+feldthata)*stickmag;
 
              leftBackDrive.setPower(y -x +gamepad1.right_stick_x);
              rightBackDrive.setPower(y+ x -gamepad1.right_stick_x);
